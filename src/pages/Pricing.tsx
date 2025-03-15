@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { 
   Check, 
   X, 
-  ArrowRight, 
+  Star, 
   CreditCard, 
   ShieldCheck, 
   Clock, 
@@ -12,7 +12,8 @@ import {
   Globe,
   HelpCircle,
   DownloadCloud,
-  Zap
+  Zap,
+  Construction
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -107,7 +108,7 @@ const faqs = [
   },
   {
     question: 'Какие способы оплаты вы принимаете?',
-    answer: 'Мы принимаем все основные кредитные карты, платежи через СБП, ЮMoney, QIWI, WebMoney и различные региональные способы оплаты. Все транзакции защищены шифрованием стандарта отрасли.'
+    answer: 'Мы принимаем оплату Звездами Telegram. Оплата через СБП находится в разработке и будет доступна в ближайшее время.'
   }
 ];
 
@@ -205,16 +206,18 @@ const Pricing: React.FC = () => {
               <h3 className="text-xl font-semibold mb-1">{plan.name}</h3>
               <p className="text-white/60 mb-4 min-h-[40px]">{plan.description}</p>
               
-              <div className="flex items-baseline gap-1 mb-4">
+              <div className="flex items-baseline gap-2 mb-4">
+                <Star className="h-5 w-5 text-[#FFD700] fill-[#FFD700]" />
                 <span className="text-3xl font-bold">
-                  {billingCycle === 'monthly' ? plan.monthly : (plan.yearly / 12).toFixed(0)}₽
+                  {billingCycle === 'monthly' ? plan.monthly : (plan.yearly / 12).toFixed(0)}
                 </span>
                 <span className="text-white/60">/ месяц</span>
               </div>
               
               {billingCycle === 'yearly' && (
                 <div className="text-sm bg-vpn-green/10 text-vpn-green rounded-lg py-1.5 px-3 mb-4 inline-block">
-                  {(plan.monthly * 12 - plan.yearly).toFixed(0)}₽ экономии в год
+                  <Star className="h-4 w-4 text-[#FFD700] fill-[#FFD700] inline mr-1" />
+                  Экономия {(plan.monthly * 12 - plan.yearly).toFixed(0)} звезд в год
                 </div>
               )}
               
@@ -250,6 +253,50 @@ const Pricing: React.FC = () => {
           </motion.div>
         ))}
       </div>
+
+      {/* Способы оплаты */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.5 }}
+        className="glass-panel p-8 md:p-10 rounded-2xl mb-16"
+      >
+        <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center">Способы оплаты</h2>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="flex items-center gap-4 p-4 bg-vpn-green/10 rounded-xl">
+            <div className="w-12 h-12 flex items-center justify-center bg-vpn-green/20 rounded-lg">
+              <Star className="w-6 h-6 text-[#FFD700] fill-[#FFD700]" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-lg mb-1">Звезды Telegram</h3>
+              <p className="text-white/70 text-sm">
+                Быстрая и безопасная оплата Звездами Telegram
+              </p>
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-4 p-4 bg-white/5 rounded-xl">
+            <div className="w-12 h-12 flex items-center justify-center bg-white/10 rounded-lg">
+              <div className="relative">
+                <CreditCard className="w-6 h-6 text-white/50" />
+                <Construction className="w-4 h-4 text-vpn-green absolute -top-1 -right-1" />
+              </div>
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="font-semibold text-lg mb-1">Оплата через СБП</h3>
+                <span className="bg-vpn-green/20 text-vpn-green text-xs px-2 py-0.5 rounded-full">
+                  В разработке
+                </span>
+              </div>
+              <p className="text-white/70 text-sm">
+                Скоро будет доступна оплата через Систему Быстрых Платежей
+              </p>
+            </div>
+          </div>
+        </div>
+      </motion.div>
 
       {/* Промокод */}
       <motion.div
