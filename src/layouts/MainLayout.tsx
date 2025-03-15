@@ -2,21 +2,35 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, Activity, CreditCard, User, Menu, X, Globe, ChevronDown } from 'lucide-react';
+import { Shield, Activity, CreditCard, User, Menu, X, Globe, ChevronDown, Info, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/context/AuthContext';
 
-const navLinks = [
-  { name: 'Home', path: '/', icon: Shield },
-  { name: 'Server Status', path: '/servers', icon: Activity },
-  { name: 'Pricing', path: '/pricing', icon: CreditCard },
-  { name: 'Account', path: '/account', icon: User },
-];
+const getNavLinks = (isLoggedIn: boolean) => {
+  // Base links for all users
+  const links = [
+    { name: 'Info', path: '/info', icon: Info },
+    { name: 'Server Status', path: '/servers', icon: Activity },
+    { name: 'Pricing', path: '/pricing', icon: CreditCard },
+  ];
+  
+  // Add links for logged in users
+  if (isLoggedIn) {
+    links.unshift({ name: 'Dashboard', path: '/', icon: Shield });
+    links.push({ name: 'Account', path: '/account', icon: User });
+  }
+  
+  return links;
+};
 
 const MainLayout: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const { isLoggedIn, login, logout } = useAuth();
+  
+  const navLinks = getNavLinks(isLoggedIn);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -65,7 +79,7 @@ const MainLayout: React.FC = () => {
       >
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2">
+          <Link to={isLoggedIn ? "/" : "/info"} className="flex items-center gap-2">
             <div className="relative">
               <div className="absolute inset-0 bg-vpn-green/30 rounded-full blur-lg"></div>
               <Shield className="w-8 h-8 text-vpn-green relative" />
@@ -92,7 +106,7 @@ const MainLayout: React.FC = () => {
             ))}
           </nav>
 
-          {/* Language Selector (Desktop) */}
+          {/* Language Selector and Auth Button (Desktop) */}
           <div className="hidden md:flex items-center gap-2">
             <Button variant="ghost" size="sm" className="gap-1 text-white/80 hover:text-white">
               <Globe className="w-4 h-4" />
@@ -102,9 +116,22 @@ const MainLayout: React.FC = () => {
             
             <div className="w-px h-6 bg-white/10"></div>
             
-            <Button className="bg-vpn-green hover:bg-vpn-green-dark text-black font-medium">
-              Get Started
-            </Button>
+            {isLoggedIn ? (
+              <Button 
+                onClick={logout}
+                className="flex items-center gap-1 bg-white/10 hover:bg-white/15 text-white"
+              >
+                <LogOut className="w-4 h-4" />
+                Logout
+              </Button>
+            ) : (
+              <Button 
+                onClick={login}
+                className="bg-vpn-green hover:bg-vpn-green-dark text-black font-medium"
+              >
+                Get Started
+              </Button>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -149,9 +176,22 @@ const MainLayout: React.FC = () => {
                 </Link>
               ))}
               <div className="pt-4 border-t border-white/10 mt-4">
-                <Button className="w-full bg-vpn-green hover:bg-vpn-green-dark text-black font-medium justify-center">
-                  Get Started
-                </Button>
+                {isLoggedIn ? (
+                  <Button 
+                    onClick={logout}
+                    className="w-full bg-white/10 hover:bg-white/15 text-white justify-center"
+                  >
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Logout
+                  </Button>
+                ) : (
+                  <Button 
+                    onClick={login}
+                    className="w-full bg-vpn-green hover:bg-vpn-green-dark text-black font-medium justify-center"
+                  >
+                    Get Started
+                  </Button>
+                )}
               </div>
             </nav>
           </motion.div>
@@ -179,7 +219,7 @@ const MainLayout: React.FC = () => {
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
-              <Link to="/" className="flex items-center gap-2 mb-4">
+              <Link to={isLoggedIn ? "/" : "/info"} className="flex items-center gap-2 mb-4">
                 <Shield className="w-6 h-6 text-vpn-green" />
                 <span className="text-lg font-bold text-white">VPNify</span>
               </Link>
