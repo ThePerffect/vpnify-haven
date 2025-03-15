@@ -17,6 +17,7 @@ import NotFound from "./pages/NotFound";
 import ServerStatus from "./pages/ServerStatus";
 import Pricing from "./pages/Pricing";
 import Account from "./pages/Account";
+import Admin from "./pages/Admin";
 
 // Lazy loaded pages
 const About = lazy(() => import("./pages/About"));
@@ -28,6 +29,17 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { isLoggedIn } = useAuth();
   
   if (!isLoggedIn) {
+    return <Navigate to="/info" replace />;
+  }
+  
+  return <>{children}</>;
+};
+
+// Admin route component
+const AdminRoute = ({ children }: { children: React.ReactNode }) => {
+  const { isLoggedIn, isAdmin } = useAuth();
+  
+  if (!isLoggedIn || !isAdmin) {
     return <Navigate to="/info" replace />;
   }
   
@@ -53,9 +65,17 @@ const AppRoutes = () => {
           } 
         />
         <Route 
+          path="admin" 
+          element={
+            <AdminRoute>
+              <Admin />
+            </AdminRoute>
+          } 
+        />
+        <Route 
           path="about" 
           element={
-            <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+            <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Загрузка...</div>}>
               <About />
             </Suspense>
           } 

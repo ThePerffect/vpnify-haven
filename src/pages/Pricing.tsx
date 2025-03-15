@@ -17,6 +17,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import PromoCodeForm from '@/components/PromoCodeForm';
+import { useAuth } from '@/context/AuthContext';
+import { Link } from 'react-router-dom';
 
 interface Plan {
   id: string;
@@ -34,92 +36,93 @@ interface Plan {
 const plans: Plan[] = [
   {
     id: 'basic',
-    name: 'Basic',
-    monthly: 5.99,
-    yearly: 59.88,
-    description: 'Essential protection for casual browsing',
+    name: 'Базовый',
+    monthly: 349,
+    yearly: 3490,
+    description: 'Необходимая защита для повседневного использования',
     features: [
-      { title: '5 Simultaneous Connections', included: true },
-      { title: 'Standard VPN Speeds', included: true },
-      { title: 'Access to 30+ Countries', included: true },
-      { title: 'No Bandwidth Limits', included: true },
-      { title: 'Ad Blocker', included: false },
-      { title: 'Advanced Security Features', included: false },
-      { title: 'Premium Server Locations', included: false },
-      { title: '24/7 Priority Support', included: false }
+      { title: '5 Одновременных подключений', included: true },
+      { title: 'Стандартная скорость VPN', included: true },
+      { title: 'Доступ к 30+ странам', included: true },
+      { title: 'Без ограничений трафика', included: true },
+      { title: 'Блокировщик рекламы', included: false },
+      { title: 'Расширенные функции безопасности', included: false },
+      { title: 'Премиум-локации серверов', included: false },
+      { title: 'Приоритетная поддержка 24/7', included: false }
     ]
   },
   {
     id: 'pro',
-    name: 'Pro',
-    monthly: 9.99,
-    yearly: 99.96,
-    description: 'Advanced protection with extra features',
+    name: 'Профессиональный',
+    monthly: 649,
+    yearly: 6490,
+    description: 'Расширенная защита с дополнительными возможностями',
     popular: true,
     features: [
-      { title: '10 Simultaneous Connections', included: true },
-      { title: 'High VPN Speeds', included: true },
-      { title: 'Access to 60+ Countries', included: true },
-      { title: 'No Bandwidth Limits', included: true },
-      { title: 'Ad Blocker', included: true },
-      { title: 'Advanced Security Features', included: true },
-      { title: 'Premium Server Locations', included: false },
-      { title: '24/7 Priority Support', included: false }
+      { title: '10 Одновременных подключений', included: true },
+      { title: 'Высокая скорость VPN', included: true },
+      { title: 'Доступ к 60+ странам', included: true },
+      { title: 'Без ограничений трафика', included: true },
+      { title: 'Блокировщик рекламы', included: true },
+      { title: 'Расширенные функции безопасности', included: true },
+      { title: 'Премиум-локации серверов', included: false },
+      { title: 'Приоритетная поддержка 24/7', included: false }
     ]
   },
   {
     id: 'enterprise',
-    name: 'Enterprise',
-    monthly: 15.99,
-    yearly: 159.96,
-    description: 'Ultimate protection for power users',
+    name: 'Корпоративный',
+    monthly: 999,
+    yearly: 9990,
+    description: 'Максимальная защита для требовательных пользователей',
     features: [
-      { title: 'Unlimited Simultaneous Connections', included: true },
-      { title: 'Maximum VPN Speeds', included: true },
-      { title: 'Access to 95+ Countries', included: true },
-      { title: 'No Bandwidth Limits', included: true },
-      { title: 'Ad Blocker', included: true },
-      { title: 'Advanced Security Features', included: true },
-      { title: 'Premium Server Locations', included: true },
-      { title: '24/7 Priority Support', included: true }
+      { title: 'Неограниченное число подключений', included: true },
+      { title: 'Максимальная скорость VPN', included: true },
+      { title: 'Доступ к 95+ странам', included: true },
+      { title: 'Без ограничений трафика', included: true },
+      { title: 'Блокировщик рекламы', included: true },
+      { title: 'Расширенные функции безопасности', included: true },
+      { title: 'Премиум-локации серверов', included: true },
+      { title: 'Приоритетная поддержка 24/7', included: true }
     ]
   }
 ];
 
 const faqs = [
   {
-    question: 'How does the VPN service work?',
-    answer: 'Our VPN creates an encrypted tunnel between your device and our secure servers, masking your IP address and encrypting your internet traffic. This protects your privacy and allows you to access content securely from anywhere.'
+    question: 'Как работает VPN-сервис?',
+    answer: 'Наш VPN создает зашифрованный туннель между вашим устройством и нашими защищенными серверами, скрывая ваш IP-адрес и шифруя интернет-трафик. Это защищает вашу конфиденциальность и позволяет безопасно получать доступ к контенту из любой точки мира.'
   },
   {
-    question: 'Can I use the VPN on multiple devices?',
-    answer: 'Yes, depending on your subscription plan, you can use our VPN on multiple devices simultaneously. The Basic plan supports up to 5 devices, Pro supports 10 devices, and Enterprise offers unlimited device connections.'
+    question: 'Могу ли я использовать VPN на нескольких устройствах?',
+    answer: 'Да, в зависимости от выбранного тарифа, вы можете использовать наш VPN на нескольких устройствах одновременно. Базовый план поддерживает до 5 устройств, Профессиональный - до 10 устройств, а Корпоративный предлагает неограниченное количество подключений.'
   },
   {
-    question: 'Is my browsing activity logged?',
-    answer: 'No, we maintain a strict no-logs policy. We do not monitor, record, or store your browsing history, traffic destination, data content, or DNS queries. Your privacy is our top priority.'
+    question: 'Ведется ли журнал моей активности в интернете?',
+    answer: 'Нет, мы придерживаемся строгой политики отсутствия логов. Мы не отслеживаем, не записываем и не храним историю вашего браузера, назначение трафика, содержание данных или DNS-запросы. Ваша конфиденциальность - наш приоритет.'
   },
   {
-    question: 'Can I cancel my subscription anytime?',
-    answer: 'Yes, you can cancel your subscription at any time. For monthly subscriptions, service continues until the end of the current billing cycle. For annual subscriptions, you can request a prorated refund within the first 30 days.'
+    question: 'Могу ли я отменить подписку в любое время?',
+    answer: 'Да, вы можете отменить подписку в любое время. Для ежемесячных подписок услуга продолжается до конца текущего расчетного периода. Для годовых подписок вы можете запросить пропорциональный возврат средств в течение первых 30 дней.'
   },
   {
-    question: 'What payment methods do you accept?',
-    answer: 'We accept all major credit cards, PayPal, cryptocurrency (Bitcoin, Ethereum), and various regional payment methods. All transactions are secured with industry-standard encryption.'
+    question: 'Какие способы оплаты вы принимаете?',
+    answer: 'Мы принимаем все основные кредитные карты, платежи через СБП, ЮMoney, QIWI, WebMoney и различные региональные способы оплаты. Все транзакции защищены шифрованием стандарта отрасли.'
   }
 ];
 
 const Pricing: React.FC = () => {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
+  const { isAdmin } = useAuth();
 
   const toggleFaq = (index: number) => {
     setExpandedFaq(expandedFaq === index ? null : index);
   };
 
   const handleSubscribe = (planId: string) => {
-    toast.success(`Subscription initiated for ${planId} plan`);
-    // In a real app, this would redirect to a checkout page
+    toast.success(`Подписка оформлена на тариф ${planId}`);
+    // В реальном приложении здесь будет редирект на страницу оформления заказа
   };
 
   return (
@@ -130,13 +133,23 @@ const Pricing: React.FC = () => {
         transition={{ duration: 0.4 }}
         className="text-center mb-16"
       >
-        <h1 className="text-3xl md:text-5xl font-bold mb-4">Simple, Transparent Pricing</h1>
+        <h1 className="text-3xl md:text-5xl font-bold mb-4">Простые и прозрачные тарифы</h1>
         <p className="text-white/70 text-lg max-w-2xl mx-auto">
-          Choose the perfect plan for your needs. All plans include our core VPN protection.
+          Выберите идеальный тариф для ваших потребностей. Все тарифы включают базовую VPN-защиту.
         </p>
+
+        {isAdmin && (
+          <div className="mt-4">
+            <Link to="/admin">
+              <Button variant="outline" className="bg-vpn-green/10 border-vpn-green/50 text-vpn-green hover:bg-vpn-green/20">
+                Перейти в панель администратора
+              </Button>
+            </Link>
+          </div>
+        )}
       </motion.div>
 
-      {/* Billing toggle */}
+      {/* Переключатель биллинга */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -152,7 +165,7 @@ const Pricing: React.FC = () => {
                 : 'text-white hover:bg-white/5'
             }`}
           >
-            Monthly
+            Ежемесячно
           </button>
           <button
             onClick={() => setBillingCycle('yearly')}
@@ -162,15 +175,15 @@ const Pricing: React.FC = () => {
                 : 'text-white hover:bg-white/5'
             }`}
           >
-            Yearly
+            Ежегодно
             <span className="ml-2 text-xs bg-vpn-green/20 px-2 py-0.5 rounded-full">
-              Save 20%
+              Скидка 20%
             </span>
           </button>
         </div>
       </motion.div>
 
-      {/* Plans */}
+      {/* Тарифы */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
         {plans.map((plan, index) => (
           <motion.div
@@ -184,7 +197,7 @@ const Pricing: React.FC = () => {
           >
             {plan.popular && (
               <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-vpn-green text-black px-4 py-1 rounded-full text-xs font-medium">
-                Most Popular
+                Самый популярный
               </div>
             )}
 
@@ -194,14 +207,14 @@ const Pricing: React.FC = () => {
               
               <div className="flex items-baseline gap-1 mb-4">
                 <span className="text-3xl font-bold">
-                  ${billingCycle === 'monthly' ? plan.monthly : (plan.yearly / 12).toFixed(2)}
+                  {billingCycle === 'monthly' ? plan.monthly : (plan.yearly / 12).toFixed(0)}₽
                 </span>
-                <span className="text-white/60">/ month</span>
+                <span className="text-white/60">/ месяц</span>
               </div>
               
               {billingCycle === 'yearly' && (
                 <div className="text-sm bg-vpn-green/10 text-vpn-green rounded-lg py-1.5 px-3 mb-4 inline-block">
-                  ${(plan.monthly * 12 - plan.yearly).toFixed(2)} saved yearly
+                  {(plan.monthly * 12 - plan.yearly).toFixed(0)}₽ экономии в год
                 </div>
               )}
               
@@ -213,12 +226,12 @@ const Pricing: React.FC = () => {
                     : 'bg-white/10 hover:bg-white/15 text-white'
                 }`}
               >
-                Subscribe Now
+                Оформить подписку
               </Button>
             </div>
             
             <div className="pt-4 border-t border-white/10">
-              <div className="text-sm font-medium mb-3">Plan includes:</div>
+              <div className="text-sm font-medium mb-3">Тариф включает:</div>
               <ul className="space-y-3">
                 {plan.features.map((feature, idx) => (
                   <li key={idx} className="flex items-start gap-3">
@@ -238,22 +251,22 @@ const Pricing: React.FC = () => {
         ))}
       </div>
 
-      {/* Promo Code Section */}
+      {/* Промокод */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.5 }}
         className="glass-panel p-8 md:p-10 rounded-2xl mb-16"
       >
-        <h2 className="text-2xl md:text-3xl font-bold mb-4 text-center">Have a Promo Code?</h2>
+        <h2 className="text-2xl md:text-3xl font-bold mb-4 text-center">У вас есть промокод?</h2>
         <p className="text-white/70 text-center mb-8">
-          Enter your promotional code to receive a special discount on your VPN subscription.
+          Введите промокод, чтобы получить скидку на подписку VPN.
         </p>
         
         <PromoCodeForm />
       </motion.div>
 
-      {/* Features Section */}
+      {/* Преимущества */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -261,7 +274,7 @@ const Pricing: React.FC = () => {
         className="mb-16"
       >
         <h2 className="text-2xl md:text-3xl font-bold mb-10 text-center">
-          Why Choose Our VPN?
+          Почему выбирают наш VPN?
         </h2>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -269,9 +282,9 @@ const Pricing: React.FC = () => {
             <div className="w-12 h-12 flex items-center justify-center bg-vpn-green/10 rounded-lg mb-5">
               <ShieldCheck className="w-6 h-6 text-vpn-green" />
             </div>
-            <h3 className="text-xl font-semibold mb-2">Ultimate Privacy</h3>
+            <h3 className="text-xl font-semibold mb-2">Полная приватность</h3>
             <p className="text-white/70">
-              Advanced encryption and strict no-logs policy to protect your data.
+              Продвинутое шифрование и строгая политика отсутствия логов для защиты ваших данных.
             </p>
           </div>
           
@@ -279,9 +292,9 @@ const Pricing: React.FC = () => {
             <div className="w-12 h-12 flex items-center justify-center bg-vpn-green/10 rounded-lg mb-5">
               <Zap className="w-6 h-6 text-vpn-green" />
             </div>
-            <h3 className="text-xl font-semibold mb-2">Lightning Fast</h3>
+            <h3 className="text-xl font-semibold mb-2">Молниеносная скорость</h3>
             <p className="text-white/70">
-              Optimized servers for maximum speed and minimal latency.
+              Оптимизированные серверы для максимальной скорости и минимальной задержки.
             </p>
           </div>
           
@@ -289,9 +302,9 @@ const Pricing: React.FC = () => {
             <div className="w-12 h-12 flex items-center justify-center bg-vpn-green/10 rounded-lg mb-5">
               <Globe className="w-6 h-6 text-vpn-green" />
             </div>
-            <h3 className="text-xl font-semibold mb-2">Global Access</h3>
+            <h3 className="text-xl font-semibold mb-2">Глобальный доступ</h3>
             <p className="text-white/70">
-              Connect to servers in 95+ countries to access content anywhere.
+              Подключайтесь к серверам в 95+ странах для доступа к контенту из любой точки мира.
             </p>
           </div>
           
@@ -299,15 +312,15 @@ const Pricing: React.FC = () => {
             <div className="w-12 h-12 flex items-center justify-center bg-vpn-green/10 rounded-lg mb-5">
               <DownloadCloud className="w-6 h-6 text-vpn-green" />
             </div>
-            <h3 className="text-xl font-semibold mb-2">Easy to Use</h3>
+            <h3 className="text-xl font-semibold mb-2">Простое использование</h3>
             <p className="text-white/70">
-              Simple one-click connection on all your devices.
+              Подключение в один клик на всех ваших устройствах.
             </p>
           </div>
         </div>
       </motion.div>
 
-      {/* FAQs */}
+      {/* Часто задаваемые вопросы */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -315,7 +328,7 @@ const Pricing: React.FC = () => {
         className="mb-16"
       >
         <h2 className="text-2xl md:text-3xl font-bold mb-10 text-center">
-          Frequently Asked Questions
+          Часто задаваемые вопросы
         </h2>
         
         <div className="max-w-3xl mx-auto">
@@ -355,24 +368,24 @@ const Pricing: React.FC = () => {
         </div>
       </motion.div>
 
-      {/* CTA Section */}
+      {/* CTA Секция */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.8 }}
       >
         <div className="glass-panel p-10 md:p-16 rounded-2xl text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to secure your connection?</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">Готовы защитить ваше соединение?</h2>
           <p className="text-white/70 text-lg max-w-2xl mx-auto mb-8">
-            Join millions of users who trust our VPN for online privacy and security.
+            Присоединяйтесь к миллионам пользователей, которые доверяют нашему VPN для защиты конфиденциальности и безопасности в интернете.
           </p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Button size="lg" className="bg-vpn-green hover:bg-vpn-green-dark text-black font-medium px-8">
-              Get Started Now
+              Начать сейчас
             </Button>
             <Button variant="outline" size="lg" className="text-white border-white/20 hover:bg-white/5">
-              Contact Sales
+              Связаться с отделом продаж
             </Button>
           </div>
         </div>
