@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { 
@@ -20,6 +19,7 @@ import { toast } from 'sonner';
 import PromoCodeForm from '@/components/PromoCodeForm';
 import { useAuth } from '@/context/AuthContext';
 import { Link } from 'react-router-dom';
+import PurchaseConfirmDialog from '@/components/PurchaseConfirmDialog';
 
 interface Plan {
   id: string;
@@ -116,14 +116,23 @@ const Pricing: React.FC = () => {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
   const { isAdmin } = useAuth();
+  const [purchaseDialogOpen, setPurchaseDialogOpen] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<{id: string; name: string; price: number} | null>(null);
 
   const toggleFaq = (index: number) => {
     setExpandedFaq(expandedFaq === index ? null : index);
   };
 
-  const handleSubscribe = (planId: string) => {
-    toast.success(`Подписка оформлена на тариф ${planId}`);
-    // В реальном приложении здесь будет редирект на страницу оформления заказа
+  const handleSubscribe = (planId: string, planName: string, price: number) => {
+    setSelectedPlan({ id: planId, name: planName, price });
+    setPurchaseDialogOpen(true);
+  };
+
+  const handlePaymentProcess = () => {
+    if (!selectedPlan) return;
+    
+    toast.success(`Переход к оплате тарифа ${selectedPlan.name}`);
+    // В реальном приложении здесь будет редирект на страницу оплаты или вызов API
   };
 
   return (
@@ -222,7 +231,11 @@ const Pricing: React.FC = () => {
               )}
               
               <Button 
-                onClick={() => handleSubscribe(plan.id)}
+                onClick={() => handleSubscribe(
+                  plan.id, 
+                  plan.name, 
+                  billingCycle === 'monthly' ? plan.monthly : plan.yearly
+                )}
                 className={`w-full ${
                   plan.popular 
                     ? 'bg-vpn-green hover:bg-vpn-green-dark text-black' 
@@ -437,6 +450,17 @@ const Pricing: React.FC = () => {
           </div>
         </div>
       </motion.div>
+
+      {/* Диалог подтверждения покупки */}
+      {selectedPlan && (
+        <PurchaseConfirmDialog
+          open={purchaseDialogOpen}
+          onOpenChange={setPurchaseDialogOpen}
+          planName={selectedPlan.name}
+          planPrice={selectedPlan.price}
+          onConfirm={handlePaymentProcess}
+        />
+      )}
     </div>
   );
 };
