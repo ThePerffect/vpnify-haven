@@ -1,0 +1,246 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>502 Ошибка сервера - VPNify Haven</title>
+    <meta name="description" content="Сервер временно недоступен" />
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+      :root {
+        --background: #121212;
+        --foreground: #ffffff;
+        --card: #171717;
+        --card-foreground: #ffffff;
+        --primary: #0BDA51;
+        --primary-foreground: #ffffff;
+        --secondary: #1f1f1f;
+        --secondary-foreground: #ffffff;
+        --muted: #262626;
+        --muted-foreground: #a6a6a6;
+        --accent: #0BDA51;
+        --accent-foreground: #ffffff;
+        --destructive: #f04747;
+        --destructive-foreground: #ffffff;
+        --border: #333333;
+        --input: #333333;
+        --ring: #0BDA51;
+        --radius: 0.75rem;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Inter', sans-serif;
+      }
+
+      body {
+        background-color: var(--background);
+        color: var(--foreground);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 2rem;
+        overflow-x: hidden;
+      }
+
+      .container {
+        max-width: 800px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        position: relative;
+        z-index: 10;
+      }
+
+      .error-code {
+        font-size: 7rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(90deg, #0BDA51, #5cff8a);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+
+      .error-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+      }
+
+      .error-message {
+        font-size: 1.1rem;
+        color: var(--muted-foreground);
+        margin-bottom: 2rem;
+        max-width: 600px;
+      }
+
+      .glass-panel {
+        backdrop-filter: blur(10px);
+        background-color: rgba(23, 23, 23, 0.6);
+        border: 1px solid rgba(11, 218, 81, 0.2);
+        border-radius: 1rem;
+        padding: 2.5rem;
+        width: 100%;
+        box-shadow: 0 8px 32px rgba(11, 218, 81, 0.08);
+        margin-bottom: 2rem;
+      }
+
+      .background-glow {
+        position: absolute;
+        width: 300px;
+        height: 300px;
+        border-radius: 50%;
+        background-color: rgba(11, 218, 81, 0.1);
+        filter: blur(100px);
+        z-index: 1;
+      }
+
+      .glow-1 {
+        top: 20%;
+        left: 10%;
+      }
+
+      .glow-2 {
+        bottom: 10%;
+        right: 20%;
+      }
+
+      .grid-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: 
+          linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        background-size: 30px 30px;
+        z-index: 0;
+        opacity: 0.2;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--radius);
+        font-weight: 500;
+        padding: 0.75rem 1.5rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+      }
+
+      .btn-primary {
+        background-color: var(--primary);
+        color: #000000;
+      }
+
+      .btn-primary:hover {
+        background-color: #09c147;
+      }
+
+      .btn-secondary {
+        background-color: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        margin-left: 1rem;
+      }
+
+      .btn-secondary:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+      }
+
+      .server-status {
+        display: flex;
+        align-items: center;
+        margin-top: 2rem;
+        padding: 0.75rem 1.25rem;
+        background-color: var(--muted);
+        border-radius: 9999px;
+      }
+
+      .status-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background-color: var(--destructive);
+        margin-right: 0.5rem;
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          opacity: 0.6;
+        }
+        50% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0.6;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .error-code {
+          font-size: 4rem;
+        }
+        
+        .error-title {
+          font-size: 1.5rem;
+        }
+        
+        .actions {
+          flex-direction: column;
+        }
+        
+        .btn-secondary {
+          margin-left: 0;
+          margin-top: 0.5rem;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="grid-bg"></div>
+    <div class="background-glow glow-1"></div>
+    <div class="background-glow glow-2"></div>
+    
+    <div class="container">
+      <div class="glass-panel">
+        <div class="error-code">502</div>
+        <h1 class="error-title">Ошибка сервера</h1>
+        <p class="error-message">
+          К сожалению, сервер временно недоступен. Наши инженеры уже работают над устранением проблемы. Пожалуйста, попробуйте обновить страницу или вернитесь через несколько минут.
+        </p>
+        
+        <div class="actions">
+          <a href="javascript:location.reload()" class="btn btn-primary">Обновить страницу</a>
+          <a href="/" class="btn btn-secondary">Вернуться на главную</a>
+        </div>
+      </div>
+      
+      <div class="server-status">
+        <div class="status-dot"></div>
+        <span>Статус серверов: Технические работы</span>
+      </div>
+    </div>
+  </body>
+</html>
